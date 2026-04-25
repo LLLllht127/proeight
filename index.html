@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上城区政协委员通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --primary-red: #C41E3A;
+            --deep-red: #8B0000;
+            --gold: #D4AF37;
+            --gold-light: #F0D78C;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --text-dark: #2d2d2d;
+            --text-light: #666;
+            --white: #ffffff;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+            --radius: 16px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            scroll-behavior: auto;
+            font-size: 16px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-red) rgba(0,0,0,0.1);
+        }
+        html::-webkit-scrollbar { width: 8px; }
+        html::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        html::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary-red), var(--deep-red)); border-radius: 4px; }
+        html::-webkit-scrollbar-thumb:hover { background: var(--primary-red); }
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes revealFromLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes revealFromRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleReveal {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes scrollBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+        @keyframes progressBar {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 1001;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--primary-red) 50%, var(--gold) 100%);
+            transform-origin: left; transition: transform 0.1s linear;
+            box-shadow: 0 0 10px rgba(212,175,55,0.5);
+        }
+
+        /* ===== SCROLL SIDE INDICATOR ===== */
+        .scroll-indicator {
+            position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+            z-index: 998; display: flex; flex-direction: column; gap: 1rem;
+        }
+        .scroll-indicator-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(196,30,58,0.2); border: 2px solid rgba(196,30,58,0.3);
+            transition: var(--transition); cursor: pointer; position: relative;
+        }
+        .scroll-indicator-dot::before {
+            content: attr(data-label); position: absolute; right: 22px; top: 50%;
+            transform: translateY(-50%); white-space: nowrap;
+            background: var(--primary-red); color: white;
+            padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.75rem;
+            opacity: 0; pointer-events: none; transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .scroll-indicator-dot:hover::before { opacity: 1; }
+        .scroll-indicator-dot.active {
+            background: var(--primary-red); border-color: var(--primary-red);
+            box-shadow: 0 0 12px rgba(196,30,58,0.4);
+            transform: scale(1.3);
+        }
+
+        /* ===== FULL PAGE NAVIGATION MAP ===== */
+        .nav-map {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            z-index: 998; display: flex; align-items: center; gap: 0.25rem;
+            background: rgba(26, 26, 46, 0.85); backdrop-filter: blur(12px);
+            padding: 0.5rem 1rem; border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: var(--transition);
+            opacity: 0; transform: translateX(-50%) translateY(20px);
+        }
+        .nav-map.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .nav-map-item {
+            display: flex; align-items: center; gap: 0.35rem;
+            padding: 0.35rem 0.7rem; border-radius: 20px;
+            color: rgba(255,255,255,0.6); font-size: 0.75rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); white-space: nowrap;
+            text-decoration: none; border: none; background: none;
+            font-family: inherit;
+        }
+        .nav-map-item:hover { color: white; background: rgba(255,255,255,0.1); }
+        .nav-map-item.active {
+            color: white; background: var(--primary-red);
+            box-shadow: 0 2px 8px rgba(196,30,58,0.4);
+        }
+        .nav-map-divider {
+            width: 1px; height: 16px; background: rgba(255,255,255,0.15);
+            margin: 0 0.15rem;
+        }
+        .nav-map-keyhint {
+            color: rgba(255,255,255,0.3); font-size: 0.65rem;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 3px;
+            padding: 0 3px; line-height: 1.4; margin-left: 2px;
+        }
+
+        /* ===== SCROLL TOOLTIP ===== */
+        .scroll-tooltip {
+            position: fixed; left: 50%; bottom: 6rem; transform: translateX(-50%);
+            z-index: 999; background: rgba(26, 26, 46, 0.9); backdrop-filter: blur(12px);
+            color: white; padding: 0.6rem 1.2rem; border-radius: 12px;
+            font-size: 0.82rem; pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0; transition: opacity 0.4s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .scroll-tooltip.visible { opacity: 1; }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: linear-gradient(135deg, var(--deep-red) 0%, var(--primary-red) 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+        .header.scrolled { padding: 0.5rem 2rem; background: rgba(139, 0, 0, 0.98); backdrop-filter: blur(10px); }
+        .header-nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .header-logo { display: flex; align-items: center; gap: 1rem; color: white; text-decoration: none; }
+        .header-logo-icon {
+            width: 48px; height: 48px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: bold; color: var(--deep-red);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+            transition: var(--transition);
+        }
+        .header-logo:hover .header-logo-icon { transform: rotate(-5deg) scale(1.05); }
+        .header-logo-text { font-family: 'Noto Serif SC', serif; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; }
+        .header-links { display: flex; gap: 0.5rem; list-style: none; }
+        .header-links a {
+            color: white; text-decoration: none; font-weight: 500; font-size: 0.95rem;
+            padding: 0.5rem 1rem; border-radius: 8px; transition: var(--transition);
+            position: relative;
+        }
+        .header-links a::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 2px; background: var(--gold); transition: width 0.3s ease; border-radius: 1px;
+        }
+        .header-links a:hover::after { width: 60%; }
+        .header-links a:hover { background: rgba(255,255,255,0.1); }
+        .header-links a.active { background: rgba(255,255,255,0.15); }
+        .header-links a.active::after { width: 60%; }
+        .menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; background: none; border: none; }
+        .menu-toggle span { width: 25px; height: 3px; background: white; border-radius: 2px; transition: var(--transition); }
+        .menu-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .menu-toggle.open span:nth-child(2) { opacity: 0; }
+        .menu-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh; background: linear-gradient(135deg, var(--deep-red) 0%, var(--primary-red) 50%, #E63946 100%);
+            position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(212,175,55,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 40%);
+        }
+        .hero-pattern {
+            position: absolute; inset: 0; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .hero-deco { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.08); }
+        .hero-deco:nth-child(1) { width: 500px; height: 500px; top: -150px; right: -150px; animation: pulse 6s ease-in-out infinite; }
+        .hero-deco:nth-child(2) { width: 350px; height: 350px; bottom: -80px; left: -80px; animation: pulse 6s ease-in-out infinite 2s; }
+        .hero-deco:nth-child(3) { width: 200px; height: 200px; top: 20%; left: 10%; animation: float 8s ease-in-out infinite; border-color: rgba(212,175,55,0.1); }
+        .hero-content { text-align: center; color: white; z-index: 10; padding: 2rem; animation: fadeInUp 1s ease; }
+        .hero-badge {
+            display: inline-block; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--deep-red); padding: 0.5rem 1.5rem; border-radius: 50px;
+            font-weight: 600; margin-bottom: 1.5rem; animation: fadeInUp 1s ease 0.2s both;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+        }
+        .hero-title {
+            font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700; margin-bottom: 1rem; letter-spacing: 8px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .hero-subtitle { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto 2rem; line-height: 1.8; font-weight: 300; }
+        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease 0.4s both; }
+        .btn {
+            padding: 0.9rem 2rem; border-radius: 50px; font-weight: 600; text-decoration: none;
+            transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem;
+            cursor: pointer; border: none; font-size: 1rem; font-family: inherit;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color: var(--deep-red); box-shadow: 0 4px 15px rgba(212,175,55,0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(212,175,55,0.4); }
+        .btn-outline { border: 2px solid rgba(255,255,255,0.6); color: white; background: transparent; }
+        .btn-outline:hover { background: white; color: var(--primary-red); border-color: white; }
+        .hero-scroll-hint {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.6); font-size: 0.85rem;
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            animation: scrollBounce 2s ease-in-out infinite;
+            transition: opacity 0.5s ease;
+        }
+        .hero-scroll-hint .scroll-mouse {
+            width: 26px; height: 42px; border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 13px; position: relative; margin-bottom: 0.3rem;
+        }
+        .hero-scroll-hint .scroll-mouse::after {
+            content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 8px; background: rgba(255,255,255,0.7);
+            border-radius: 2px; animation: scrollBounce 1.5s ease-in-out infinite;
+        }
+        .hero-scroll-hint span:last-child { letter-spacing: 2px; font-size: 0.75rem; }
+        .hero-content { transition: transform 0.1s linear, opacity 0.3s ease; }
+
+        /* ===== STATS ===== */
+        .stats {
+            background: white; padding: 3rem 2rem; margin-top: -3rem;
+            position: relative; z-index: 20; border-radius: 24px 24px 0 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+        }
+        .stats-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .stat-item {
+            text-align: center; padding: 1.5rem 1rem; border-radius: 16px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+            transition: var(--transition); border: 1px solid rgba(196,30,58,0.05);
+        }
+        .stat-item:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: rgba(212,175,55,0.2); }
+        .stat-number { font-family: 'Noto Serif SC', serif; font-size: 3rem; font-weight: 700; color: var(--primary-red); line-height: 1; }
+        .stat-number span { color: var(--gold); }
+        .stat-label { color: var(--text-light); margin-top: 0.5rem; font-size: 0.95rem; }
+
+        /* ===== SECTIONS ===== */
+        .section { padding: 5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-tag {
+            display: inline-block; background: linear-gradient(135deg, var(--primary-red) 0%, var(--deep-red) 100%);
+            color: white; padding: 0.4rem 1.2rem; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 500; margin-bottom: 1rem; letter-spacing: 1px;
+        }
+        .section-title { font-family: 'Noto Serif SC', serif; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .section-desc { color: var(--text-light); max-width: 600px; margin: 0 auto; font-size: 1.05rem; }
+
+        /* ===== MODULES ===== */
+        .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .module-card {
+            background: white; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow); transition: var(--transition); cursor: pointer;
+            position: relative;
+        }
+        .module-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-hover); }
+        .module-image {
+            height: 220px; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .module-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .module-card:hover .module-image img { transform: scale(1.08); }
+        .module-image-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--deep-red) 100%);
+            z-index: 1;
+        }
+        .module-image-icon { position: absolute; z-index: 2; font-size: 3.5rem; opacity: 0.15; }
+        .module-overlay {
+            position: absolute; inset: 0; z-index: 3;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+            display: flex; align-items: flex-end; padding: 1.5rem;
+        }
+        .module-overlay h3 { color: white; font-family: 'Noto Serif SC', serif; font-size: 1.2rem; font-weight: 600; }
+        .module-number {
+            position: absolute; top: 1rem; right: 1rem; z-index: 4;
+            background: var(--gold); color: var(--deep-red);
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+        }
+        .module-click-hint {
+            position: absolute; bottom: 1rem; right: 1rem; z-index: 5;
+            background: var(--gold); color: var(--deep-red);
+            padding: 0.4rem 1rem; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 500;
+            opacity: 0; transform: translateY(10px); transition: var(--transition);
+        }
+        .module-card:hover .module-click-hint { opacity: 1; transform: translateY(0); }
+        .module-content { padding: 1.5rem; }
+        .module-content h3 { font-family: 'Noto Serif SC', serif; font-size: 1.2rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.6rem; }
+        .module-content p { color: var(--text-light); font-size: 0.9rem; line-height: 1.6; }
+        .module-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+        .module-tag { background: #fff5f5; color: var(--primary-red); padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; }
+
+        /* ===== GALLERY ===== */
+        .gallery-section { background: linear-gradient(180deg, #fff 0%, #fff5f5 100%); padding: 5rem 2rem; }
+        .gallery-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+        .gallery-item {
+            position: relative; border-radius: var(--radius); overflow: hidden;
+            aspect-ratio: 4/3; cursor: pointer; box-shadow: var(--shadow);
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            transition: var(--transition);
+        }
+        .gallery-item:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(139, 0, 0, 0.9) 0%, rgba(139, 0, 0, 0.2) 40%, transparent 60%);
+            opacity: 0; transition: opacity 0.3s ease;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 1.25rem;
+        }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        .gallery-overlay h4 { color: white; font-family: 'Noto Serif SC', serif; font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .gallery-overlay p { color: rgba(255,255,255,0.8); font-size: 0.8rem; line-height: 1.4; }
+        .gallery-load-more {
+            text-align: center; margin-top: 2rem;
+        }
+        .gallery-load-more .btn { font-size: 0.95rem; }
+
+        /* ===== STUDIOS (Module Card Style) ===== */
+        .studios-section { padding: 5rem 2rem; background: linear-gradient(180deg, #fff5f5 0%, #fff 100%); }
+        .studios-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .studio-card {
+            background: white; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow); transition: var(--transition); cursor: pointer;
+            position: relative;
+        }
+        .studio-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-hover); }
+        .studio-image { height: 240px; overflow: hidden; position: relative; background: #f0f0f0; }
+        .studio-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .studio-card:hover .studio-image img { transform: scale(1.08); }
+        .studio-badge {
+            position: absolute; top: 1rem; left: 1rem;
+            padding: 0.3rem 0.8rem; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 600; z-index: 2;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .studio-badge.five { background: linear-gradient(135deg, #D4AF37, #F0D78C); color: #5D4E00; }
+        .studio-badge.four { background: linear-gradient(135deg, #8B8B8B, #C0C0C0); color: #333; }
+        .studio-badge.three { background: linear-gradient(135deg, #CD7F32, #E8A85C); color: #5D3A00; }
+        .studio-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 50%, transparent 100%);
+            display: flex; align-items: flex-end; padding: 1.25rem;
+            opacity: 0; transition: var(--transition);
+        }
+        .studio-card:hover .studio-overlay { opacity: 1; }
+        .studio-overlay h4 { color: white; font-family: 'Noto Serif SC', serif; font-size: 1.05rem; font-weight: 600; }
+        .studio-click-hint {
+            position: absolute; bottom: 1rem; right: 1rem; z-index: 3;
+            background: var(--gold); color: var(--deep-red);
+            padding: 0.4rem 1rem; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 500;
+            opacity: 0; transform: translateY(10px); transition: var(--transition);
+        }
+        .studio-card:hover .studio-click-hint { opacity: 1; transform: translateY(0); }
+        .studio-info { padding: 1.5rem; }
+        .studio-info h4 { font-family: 'Noto Serif SC', serif; font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; line-height: 1.4; }
+        .studio-info p { color: var(--text-light); font-size: 0.9rem; line-height: 1.6; }
+        .studio-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+        .studio-tag { background: #fff5f5; color: var(--primary-red); padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; }
+
+        /* ===== TIMELINE ===== */
+        .timeline-section { padding: 5rem 2rem; background: var(--dark); color: white; }
+        .timeline { max-width: 900px; margin: 0 auto; position: relative; padding: 2rem 0; }
+        .timeline::before {
+            content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+            width: 3px; height: 100%;
+            background: linear-gradient(to bottom, var(--gold), var(--primary-red), var(--gold));
+            border-radius: 2px;
+        }
+        .timeline-item { display: flex; margin-bottom: 3rem; position: relative; }
+        .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+        .timeline-content {
+            width: calc(50% - 40px);
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            padding: 1.5rem; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: var(--transition);
+        }
+        .timeline-content:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
+        .timeline-dot {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 20px; background: var(--gold);
+            border-radius: 50%; border: 4px solid var(--dark); z-index: 10;
+            box-shadow: 0 0 15px rgba(212,175,55,0.3);
+        }
+        .timeline-date { font-family: 'Noto Serif SC', serif; color: var(--gold); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-content h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-content p { color: rgba(255,255,255,0.7); font-size: 0.92rem; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #2d1f3d 100%);
+            color: white; padding: 4rem 2rem 2rem;
+        }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h3 { font-family: 'Noto Serif SC', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--gold); }
+        .footer-section p, .footer-section li { color: rgba(255,255,255,0.7); font-size: 0.92rem; margin-bottom: 0.5rem; }
+        .footer-section ul { list-style: none; }
+        .footer-section a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.3s ease; }
+        .footer-section a:hover { color: var(--gold); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.88rem; }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed; bottom: 2rem; right: 2rem; width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--primary-red), var(--deep-red));
+            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(196,30,58,0.3); z-index: 999; border: none;
+            font-size: 1.2rem;
+        }
+        .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .back-to-top:hover { transform: translateY(-5px) scale(1.1); box-shadow: 0 8px 25px rgba(196,30,58,0.4); }
+
+        /* ===== SCROLL REVEAL ANIMATIONS ===== */
+        .reveal-up { opacity: 0; transform: translateY(50px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-up.revealed { opacity: 1; transform: translateY(0); }
+        .reveal-left { opacity: 0; transform: translateX(-50px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-left.revealed { opacity: 1; transform: translateX(0); }
+        .reveal-right { opacity: 0; transform: translateX(50px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-right.revealed { opacity: 1; transform: translateX(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.85); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-scale.revealed { opacity: 1; transform: scale(1); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.92); z-index: 2000;
+            align-items: center; justify-content: center; padding: 2rem;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-container {
+            max-width: 90vw; max-height: 90vh; position: relative;
+            animation: scaleIn 0.3s ease;
+        }
+        .modal-container img { max-width: 100%; max-height: 80vh; object-fit: contain; display: block; border-radius: 12px; }
+        .modal-close {
+            position: absolute; top: -48px; right: 0;
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white; width: 40px; height: 40px; border-radius: 50%;
+            font-size: 1.3rem; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: var(--transition);
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.25); }
+        .modal-caption { color: rgba(255,255,255,0.85); text-align: center; margin-top: 1rem; font-size: 1rem; font-weight: 500; }
+
+        /* ===== MODULE DETAIL MODAL ===== */
+        .detail-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            align-items: center; justify-content: center; padding: 2rem; overflow-y: auto;
+        }
+        .detail-modal.active { display: flex; }
+        .detail-container {
+            background: white; border-radius: var(--radius-lg); max-width: 800px; width: 100%;
+            max-height: 90vh; overflow-y: auto; position: relative;
+            animation: scaleIn 0.3s ease;
+        }
+        .detail-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--deep-red) 100%);
+            padding: 2rem; color: white; position: relative;
+        }
+        .detail-header h2 { font-family: 'Noto Serif SC', serif; font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .detail-header p { opacity: 0.85; font-size: 0.95rem; }
+        .detail-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            font-size: 1.3rem; cursor: pointer; transition: var(--transition);
+        }
+        .detail-close:hover { background: rgba(255,255,255,0.3); }
+        .detail-body { padding: 2rem; }
+        .detail-section { margin-bottom: 1.5rem; }
+        .detail-section h3 {
+            font-family: 'Noto Serif SC', serif; font-size: 1.15rem; color: var(--primary-red);
+            margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gold); display: inline-block;
+        }
+        .detail-section p { color: var(--text-dark); line-height: 1.8; }
+        .detail-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+        .detail-images img {
+            width: 100%; aspect-ratio: 4/3; object-fit: cover;
+            border-radius: 12px; cursor: pointer; transition: var(--transition);
+        }
+        .detail-images img:hover { transform: scale(1.05); box-shadow: var(--shadow); }
+
+        /* ===== IMAGE SKELETON ===== */
+        .img-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        /* ===== LAZY LOAD ===== */
+        .lazy-img {
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        .lazy-img.loaded { opacity: 1; }
+
+        /* ===== BOUNDARIES (界别) ===== */
+        .boundaries-section { padding: 5rem 2rem; background: linear-gradient(180deg, #fff 0%, #faf8f5 100%); }
+        .boundaries-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .boundary-card {
+            background: white; border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: var(--transition); cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .boundary-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+        .boundary-header {
+            padding: 1.2rem 1rem; display: flex; align-items: center; gap: 0.8rem;
+            border-bottom: 2px solid rgba(196,30,58,0.08);
+        }
+        .boundary-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .boundary-header h4 { font-family: 'Noto Serif SC', serif; font-size: 1rem; font-weight: 600; color: var(--text-dark); line-height: 1.3; }
+        .boundary-count { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+        .boundary-photos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+        .boundary-photos img {
+            width: 100%; aspect-ratio: 4/3; object-fit: cover;
+            transition: transform 0.3s ease; cursor: pointer;
+        }
+        .boundary-photos img:hover { transform: scale(1.05); }
+        .boundary-photos.single { grid-template-columns: 1fr; }
+        .boundary-photos.single img { aspect-ratio: 16/9; }
+
+        /* ===== SUB-CENTER (分中心) ===== */
+        .subcenter-section { padding: 5rem 2rem; background: linear-gradient(180deg, #faf8f5 0%, #fff5f5 100%); }
+        .subcenter-layout { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .subcenter-block {
+            background: white; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow); transition: var(--transition);
+        }
+        .subcenter-block:hover { box-shadow: var(--shadow-hover); }
+        .subcenter-title {
+            padding: 1.5rem 2rem; font-family: 'Noto Serif SC', serif;
+            font-size: 1.3rem; font-weight: 600; color: white;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--deep-red) 100%);
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .subcenter-title .sub-icon { font-size: 1.5rem; }
+        .subcenter-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; }
+        .subcenter-photos img {
+            width: 100%; aspect-ratio: 4/3; object-fit: cover; cursor: pointer;
+            transition: transform 0.3s ease; border-radius: 4px;
+        }
+        .subcenter-photos img:hover { transform: scale(1.05); }
+        .subcenter-photos .wide { grid-column: span 2; aspect-ratio: 2/1; }
+        .subcenter-desc { padding: 1.2rem 2rem; color: var(--text-light); font-size: 0.92rem; line-height: 1.7; border-top: 1px solid rgba(0,0,0,0.05); }
+
+        /* ===== SMOOTH SCROLL ===== */
+        html.is-smooth-scrolling,
+        html.is-smooth-scrolling * {
+            scroll-behavior: auto !important;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+            .studios-grid { grid-template-columns: repeat(3, 1fr); }
+            .boundaries-grid { grid-template-columns: repeat(3, 1fr); }
+            .subcenter-layout { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 992px) {
+            .scroll-indicator { display: none; }
+            .header-links {
+                position: fixed; top: 64px; left: 0; right: 0;
+                background: var(--deep-red); flex-direction: column; padding: 1.5rem;
+                gap: 0.5rem; transform: translateY(-100%); opacity: 0;
+                transition: var(--transition); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            }
+            .header-links.active { transform: translateY(0); opacity: 1; }
+            .menu-toggle { display: flex; }
+            .modules-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .studios-grid { grid-template-columns: repeat(2, 1fr); }
+            .boundaries-grid { grid-template-columns: repeat(2, 1fr); }
+            .timeline::before { left: 20px; }
+            .timeline-item, .timeline-item:nth-child(even) { flex-direction: row; padding-left: 50px; }
+            .timeline-content { width: 100%; }
+            .timeline-dot { left: 20px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-content { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .studios-grid { grid-template-columns: repeat(2, 1fr); }
+            .modules-grid { grid-template-columns: 1fr; }
+            .boundaries-grid { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 3rem 1.5rem; }
+            .gallery-section, .studios-section, .boundaries-section, .subcenter-section { padding: 3rem 1.5rem; }
+            .detail-images { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .hero-title { letter-spacing: 4px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .studios-grid { grid-template-columns: 1fr; }
+            .boundaries-grid { grid-template-columns: 1fr; }
+            .stats-grid { gap: 0.75rem; }
+            .stat-number { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } = React;
+
+        // ===== CONTEXT =====
+        const AppContext = createContext();
+
+        // ===== DATA =====
+        const modulesData = [
+            {
+                id: 1, title: '委员之家', icon: '🏛️',
+                desc: '为政协委员提供学习交流、履职尽责、联络联谊的综合服务平台',
+                tags: ['学习培训', '交流活动'],
+                content: '委员之家是区政协倾力打造的服务委员综合平台，为委员提供学习培训、履职交流、联络联谊等全方位服务。平台定期举办各类培训讲座、座谈交流活动，促进委员之间的沟通与合作，提升委员履职能力和水平。',
+                images: [
+                    'public/images/gallery/2024年5月6日 上工大讲堂.webp',
+                    'public/images/gallery/开展读书会.webp',
+                    'public/images/gallery/主体培训班合影.webp',
+                    'public/images/gallery/2023年8月，参观亚运会博物馆.webp',
+                    'public/images/gallery/2023年8月，参观亚运会博物馆2.webp',
+                    'public/images/gallery/5月25日2024年上城区职工毅行大会.webp',
+                    'public/images/gallery/5月25日2024年上城区职工毅行大会2.webp'
+                ]
+            },
+            {
+                id: 2, title: '街道委员小组', icon: '🏘️',
+                desc: '覆盖全区14个街道，组织委员参与基层协商、服务群众、反映社情民意',
+                tags: ['基层协商', '服务群众', '14个街道'],
+                content: '街道委员小组是政协工作在基层的重要延伸，14个街道实现全覆盖。小组组织委员深入社区、贴近群众，围绕民生热点难点问题开展协商议事，及时收集和反映社情民意，打通政协联系服务群众的"最后一公里"。',
+                images: [
+                    'public/images/gallery/彭埠3-彭埠街道委员小组开展"圆梦安居，助力街道回迁安置"民生议事堂专题协商.webp',
+                    'public/images/gallery/彭埠8-湖滨街道委员小组开展"助推商圈社区建设"民生议事堂活动.webp',
+                    'public/images/gallery/参加老旧小区物业提质协商议事.webp',
+                    'public/images/gallery/彭埠9-清波街道委员小组、无党派界别开展清波街道老旧小区物业服务"质价双提"议事协商活动.webp',
+                    'public/images/gallery/彭埠11-望江街道委员小组开展"普及全民金融知识增强百姓防诈意识"专题协商活动.webp',
+                    'public/images/gallery/彭埠10-小营街道委员小组举办"遇见东坡"交流会.webp',
+                    'public/images/gallery/彭埠12-南星街道委员小组携手特邀界别举办"赓续历史之文脉，建言服务为民生"冬季读书会及专题协商会.webp'
+                ]
+            },
+            {
+                id: 3, title: '界别基本情况', icon: '👥',
+                desc: '展示16个界别组织架构和活动开展情况，凝聚共识、汇聚力量',
+                tags: ['16个界别', '界别活动', '照片展示'],
+                content: '界别是人民政协的特色和优势所在。全区设有中共、无党派、共青团、青联、工会、妇联、工商联、科技、科协、侨台、新闻文体、经济、环境资源和农业、教育、医卫、社会福利和保障、民宗、特邀等16个界别，各界别定期开展活动，凝聚共识、汇聚力量。',
+                images: [
+                    'public/images/gallery/2022.12.06 中共界别委员交流活动.webp',
+                    'public/images/gallery/2024.02.02 区政协一届三次会议中共界别小组讨论会.webp',
+                    'public/images/gallery/妇联界别开展"品宋韵文化  做精致丽人"三八节活动.webp',
+                    'public/images/gallery/妇联界别召集人吕仕琼开展"七一"慰问.webp',
+                    'public/images/gallery/妇联界别调研牵头人高艳霞带队调研白马庄巾帼共富工坊，为调研报告积累素材.webp',
+                    'public/images/gallery/政协一届三次会议，妇联界别民宗界别合影.webp',
+                    'public/images/gallery/无党派界别赴区司法局调研涉外法律服务有关工作 .webp',
+                    'public/images/gallery/范国良副主席参加无党派界别"洞悉当前宏观经济态势与战略投资机遇"主题分享活动.webp',
+                    'public/images/gallery/范国良副主席为老字号工作室揭牌.webp',
+                    'public/images/gallery/重阳节开展为老服务.webp',
+                    'public/images/gallery/参加老旧小区物业提质协商议事.webp',
+                    'public/images/gallery/组织民企500强部分人员参观考察钱二.webp',
+                    'public/images/gallery/深圳浙江商会考察钱二图片.webp',
+                    'public/images/gallery/区政府副主席范国良与政协委员参观社会福利和保障界别委员工作室.webp',
+                    'public/images/gallery/社会福利和保障界别委员联系界别群众参加党纪学习教育.webp',
+                    'public/images/gallery/联动邵逸夫医院，开展"以爱之名"等残疾人画展及手工艺品义卖活动.webp',
+                    'public/images/gallery/与商户开展座谈.webp',
+                    'public/images/gallery/现场调研德寿宫附近停车泊位情况.webp',
+                    'public/images/gallery/现场调研湖滨步行街营商环境提升项目.webp',
+                    'public/images/gallery/针对德寿宫周边一件事情况进行座谈.webp'
+                ]
+            },
+            {
+                id: 4, title: '新时代协商民主实践中心', icon: '🏢',
+                desc: '杭州市政协新时代协商民主实践中心上城区分中心，推动政协工作创新发展',
+                tags: ['创新实践', '示范引领', '彭埠分中心', '紫阳分中心'],
+                content: '上城区分中心是杭州市政协新时代协商民主实践中心的重要组成部分，承担着探索政协协商民主新形式、新路径的重要使命。中心设有紫阳分中心和彭埠分中心，定期举办协商议事、调研座谈、经验交流等活动，打造政协工作创新实践的示范样板。',
+                images: [
+                    'public/images/gallery/紫阳1-区政协孙国方主席赴紫阳分中心调研.webp',
+                    'public/images/gallery/紫阳2-市政协吴玉凤副秘书长调研紫阳分中心建设工作.webp',
+                    'public/images/gallery/紫阳3-紫阳上羊实践点开展"推动邻里食堂智能化"专题协商会.webp',
+                    'public/images/gallery/彭埠1-市政协新时代协商民主实践中心矩阵建设座谈会在实践中心上城区分中心召开，市政协毛溪浩副主席参加.webp',
+                    'public/images/gallery/彭埠2-市区街三级政协党建联建工作会议在彭埠分中心召开.webp',
+                    'public/images/gallery/彭埠4-彭埠街道委员小组开展非遗体验活动.webp',
+                    'public/images/gallery/彭埠5-联盟单位夏衍小学开展棋类比赛.webp',
+                    'public/images/gallery/彭埠6-妇联界别举办国学文化品鉴暨界别调研总结会.webp',
+                    'public/images/gallery/彭埠7-共青团、青联界别，工商联界别，科技、科协界别和彭埠街道委员小组联合举办中医养生专题讲座及义诊服务活动.webp'
+                ]
+            },
+            {
+                id: 5, title: '委员履职平台', icon: '📋',
+                desc: '记录委员履职成果、展示50个委员工作室风采、推进政协工作数字化转型',
+                tags: ['履职记录', '成果展示', '50个工作室'],
+                content: '委员履职平台是区政协推进数字化转型的重要成果，实现委员履职全流程在线管理。平台记录委员参加活动、提交提案、反映社情民意等工作情况，展示委员工作室建设和运行成效，为委员履职提供便捷高效的服务支撑。全区已建成50个委员工作室，实现街道委员小组全覆盖。',
+                images: [
+                    'public/images/gallery/2024.02.02 区政协一届三次会议中共界别小组讨论会.webp',
+                    'public/images/gallery/2023年8月，参观亚运会博物馆.webp',
+                    'public/images/gallery/5月25日2024年上城区职工毅行大会.webp',
+                    'public/images/gallery/5月25日2024年上城区职工毅行大会2.webp',
+                    'public/images/gallery/区政府副主席范国良与政协委员参观社会福利和保障界别委员工作室.webp'
+                ]
+            },
+            {
+                id: 6, title: '星级委员工作室', icon: '⭐',
+                desc: '展示50个委员工作室的优秀成果和创新实践，五星25个、四星17个、三星8个',
+                tags: ['星级评定', '示范引领', '一室一品'],
+                content: '委员工作室是委员履职的重要平台，全区已建成50个委员工作室，涵盖文化、健康、公益、教育等多个领域。工作室定期开展特色活动，如宋韵文化体验、健康义诊、亲子活动等，为社区居民提供便民服务，成为政协联系群众的重要纽带。2025年度星级评定：五星25个、四星17个、三星8个。',
+                images: [
+                    'public/images/studios/17-俞富康宋韵文化委员工作室-国际艺术交流送中国"福".webp',
+                    'public/images/studios/16-大健康委员工作室-传承国粹，践行公益，走进社区开展健康宣教义诊活动.webp',
+                    'public/images/studios/10-全民阅读委员工作室-举办宋韵美学体验活动.webp',
+                    'public/images/studios/4-采荷街道"幸福19"委员工作室-"疗愈经济分享体验会"活动.webp',
+                    'public/images/studios/2-政协清波小组委员工作室-幸福清波，文化送福，联动中国美院为清波派出所、禁毒所、清波居民送新年祝福.webp',
+                    'public/images/studios/3-政协紫阳"三一"委员工作室-践行"委员说·委员做"，锚定"两个先行"目标，领跑"基层白治"之路.webp',
+                    'public/images/studios/15-张瑞旭委员工作室-举办委员工作室跨代共融日活动.webp',
+                    'public/images/studios/1-政协湖滨小组委员工作室-学习考察新质生产力一-万事利科创中心.webp',
+                    'public/images/studios/范国良副主席为老字号工作室揭牌.webp'
+                ]
+            }
+        ];
+
+        // ===== COMPLETE GALLERY DATA (65 items) =====
+        const galleryData = [
+            { img: 'public/images/gallery/紫阳1-区政协孙国方主席赴紫阳分中心调研.webp', title: '领导调研', subtitle: '区政协孙国方主席赴紫阳分中心调研' },
+            { img: 'public/images/gallery/紫阳2-市政协吴玉凤副秘书长调研紫阳分中心建设工作.webp', title: '领导调研', subtitle: '市政协吴玉凤副秘书长调研' },
+            { img: 'public/images/gallery/紫阳3-紫阳上羊实践点开展"推动邻里食堂智能化"专题协商会.webp', title: '专题协商', subtitle: '推动邻里食堂智能化' },
+            { img: 'public/images/gallery/彭埠1-市政协新时代协商民主实践中心矩阵建设座谈会在实践中心上城区分中心召开，市政协毛溪浩副主席参加.webp', title: '座谈会', subtitle: '市政协毛溪浩副主席参加' },
+            { img: 'public/images/gallery/彭埠2-市区街三级政协党建联建工作会议在彭埠分中心召开.webp', title: '党建联建', subtitle: '市区街三级政协党建联建' },
+            { img: 'public/images/gallery/彭埠3-彭埠街道委员小组开展"圆梦安居，助力街道回迁安置"民生议事堂专题协商.webp', title: '民生议事堂', subtitle: '圆梦安居回迁安置协商' },
+            { img: 'public/images/gallery/彭埠4-彭埠街道委员小组开展非遗体验活动.webp', title: '非遗体验', subtitle: '传统文化传承' },
+            { img: 'public/images/gallery/彭埠5-联盟单位夏衍小学开展棋类比赛.webp', title: '联盟活动', subtitle: '夏衍小学棋类比赛' },
+            { img: 'public/images/gallery/彭埠6-妇联界别举办国学文化品鉴暨界别调研总结会.webp', title: '国学文化', subtitle: '妇联界别调研总结' },
+            { img: 'public/images/gallery/彭埠7-共青团、青联界别，工商联界别，科技、科协界别和彭埠街道委员小组联合举办中医养生专题讲座及义诊服务活动.webp', title: '义诊服务', subtitle: '中医养生专题讲座' },
+            { img: 'public/images/gallery/彭埠8-湖滨街道委员小组开展"助推商圈社区建设"民生议事堂活动.webp', title: '商圈建设', subtitle: '湖滨街道民生议事堂' },
+            { img: 'public/images/gallery/彭埠9-清波街道委员小组、无党派界别开展清波街道老旧小区物业服务"质价双提"议事协商活动.webp', title: '物业协商', subtitle: '老旧小区质价双提' },
+            { img: 'public/images/gallery/彭埠10-小营街道委员小组举办"遇见东坡"交流会.webp', title: '文化活动', subtitle: '"遇见东坡"交流会' },
+            { img: 'public/images/gallery/彭埠11-望江街道委员小组开展"普及全民金融知识增强百姓防诈意识"专题协商活动.webp', title: '防诈宣传', subtitle: '金融知识普及' },
+            { img: 'public/images/gallery/彭埠12-南星街道委员小组携手特邀界别举办"赓续历史之文脉，建言服务为民生"冬季读书会及专题协商会.webp', title: '读书会', subtitle: '赓续文脉建言民生' },
+            { img: 'public/images/gallery/2022.12.06 中共界别委员交流活动.webp', title: '界别活动', subtitle: '中共界别委员交流' },
+            { img: 'public/images/gallery/2023年8月，参观亚运会博物馆.webp', title: '参观学习', subtitle: '参观亚运会博物馆' },
+            { img: 'public/images/gallery/2023年8月，参观亚运会博物馆2.webp', title: '参观学习', subtitle: '亚运会博物馆留念' },
+            { img: 'public/images/gallery/2024.02.02 区政协一届三次会议中共界别小组讨论会.webp', title: '政协会议', subtitle: '一届三次会议讨论' },
+            { img: 'public/images/gallery/2024年5月6日 上工大讲堂.webp', title: '培训讲座', subtitle: '上工大讲堂' },
+            { img: 'public/images/gallery/5月25日2024年上城区职工毅行大会.webp', title: '体育活动', subtitle: '职工毅行大会' },
+            { img: 'public/images/gallery/5月25日2024年上城区职工毅行大会2.webp', title: '体育活动', subtitle: '职工毅行大会' },
+            { img: 'public/images/gallery/开展读书会.webp', title: '读书活动', subtitle: '委员读书会' },
+            { img: 'public/images/gallery/主体培训班合影.webp', title: '培训合影', subtitle: '主体培训班合影' },
+            { img: 'public/images/gallery/与商户开展座谈.webp', title: '座谈交流', subtitle: '与商户开展座谈' },
+            { img: 'public/images/gallery/区政府副主席范国良与政协委员参观社会福利和保障界别委员工作室.webp', title: '工作室参观', subtitle: '范国良副主席参观工作室' },
+            { img: 'public/images/gallery/参加老旧小区物业提质协商议事.webp', title: '协商议事', subtitle: '老旧小区物业提质' },
+            { img: 'public/images/gallery/妇联界别开展"品宋韵文化  做精致丽人"三八节活动.webp', title: '三八活动', subtitle: '品宋韵文化' },
+            { img: 'public/images/gallery/妇联界别召集人吕仕琼开展"七一"慰问.webp', title: '走访慰问', subtitle: '"七一"慰问活动' },
+            { img: 'public/images/gallery/妇联界别调研牵头人高艳霞带队调研白马庄巾帼共富工坊，为调研报告积累素材.webp', title: '调研活动', subtitle: '白马庄巾帼共富工坊' },
+            { img: 'public/images/gallery/IMG20240527105848.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG20240527161315.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG20240527170959.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG_0853.HEIC.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG_20240315_085702.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG_20240531_160417.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG_20240618_095251.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/IMG_2126.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/mmexport1711700143984.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/mmexport1711702029812.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/mmexport1717153124428.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/mmexport1717153126963.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/mmexport1717153128393.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/WechatIMG31.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/WechatIMG32.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/WechatIMG33.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/2f41c28d4b53804fb60bb6ef196c54a4.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/353cd94f8a4dc02a2e821a5ba8ab043.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/3f7343aec8231bde22a668a4e17d149a.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/42e4ebbcbe8d12cf29a4876baecaca2a.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/619ee9289835d103c435f174c1e0cff.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/82cf6d0fbeb3c41a443b837ff9927617.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/db8232e0c5d40a94e9fbcf8c9dfaee8.webp', title: '活动现场', subtitle: '活动现场照片' },
+            { img: 'public/images/gallery/政协一届三次会议，妇联界别民宗界别合影.webp', title: '政协会议', subtitle: '妇联界别民宗界别合影' },
+            { img: 'public/images/gallery/无党派界别赴区司法局调研涉外法律服务有关工作 .webp', title: '界别调研', subtitle: '调研涉外法律服务' },
+            { img: 'public/images/gallery/深圳浙江商会考察钱二图片.webp', title: '考察交流', subtitle: '深圳浙江商会考察' },
+            { img: 'public/images/gallery/现场调研德寿宫附近停车泊位情况.webp', title: '现场调研', subtitle: '德寿宫停车泊位调研' },
+            { img: 'public/images/gallery/现场调研湖滨步行街营商环境提升项目.webp', title: '现场调研', subtitle: '湖滨步行街营商环境' },
+            { img: 'public/images/gallery/社会福利和保障界别委员联系界别群众参加党纪学习教育.webp', title: '学习教育', subtitle: '党纪学习教育' },
+            { img: 'public/images/gallery/组织民企500强部分人员参观考察钱二.webp', title: '参观考察', subtitle: '民企500强考察' },
+            { img: 'public/images/gallery/联动邵逸夫医院，开展"以爱之名"等残疾人画展及手工艺品义卖活动.webp', title: '公益活动', subtitle: '残疾人画展义卖' },
+            { img: 'public/images/gallery/范国良副主席为老字号工作室揭牌.webp', title: '揭牌仪式', subtitle: '老字号工作室揭牌' },
+            { img: 'public/images/gallery/范国良副主席参加无党派界别"洞悉当前宏观经济态势与战略投资机遇"主题分享活动.webp', title: '分享活动', subtitle: '宏观经济态势分享' },
+            { img: 'public/images/gallery/重阳节开展为老服务.webp', title: '为老服务', subtitle: '重阳节为老服务' },
+            { img: 'public/images/gallery/针对德寿宫周边一件事情况进行座谈.webp', title: '座谈交流', subtitle: '德寿宫周边座谈会' }
+        ];
+
+        // ===== COMPLETE STUDIOS DATA (50 items with full info from JSON) =====
+        const studiosData = [
+            { img: 'public/images/studios/1-政协湖滨小组委员工作室-学习考察新质生产力一-万事利科创中心.webp', name: '政协湖滨小组委员工作室', activity: '学习考察新质生产力', star: 5, leader: '查靖', address: '上城区羊血弄10号' },
+            { img: 'public/images/studios/2-政协清波小组委员工作室-幸福清波，文化送福，联动中国美院为清波派出所、禁毒所、清波居民送新年祝福.webp', name: '政协清波小组委员工作室', activity: '幸福清波，文化送福', star: 5, leader: '徐洁', address: '上城区清波街道蔡官巷35号三楼' },
+            { img: 'public/images/studios/3-政协紫阳"三一"委员工作室-践行"委员说·委员做"，锚定"两个先行"目标，领跑"基层白治"之路.webp', name: '政协紫阳"三一"委员工作室', activity: '践行委员说·委员做', star: 5, leader: '王盈', address: '上城区金钗袋巷79号' },
+            { img: 'public/images/studios/4-采荷街道"幸福19"委员工作室-"疗愈经济分享体验会"活动.webp', name: '采荷街道"幸福19"委员工作室', activity: '疗愈经济分享体验会', star: 5, leader: '赵丹晨', address: '上城区采荷街道洁莲社区' },
+            { img: 'public/images/studios/5-政协四季青小组委员工作室-市区县三级联动，召开"投早投小投科技"专题协商会.webp', name: '政协四季青小组委员工作室', activity: '投早投小投科技专题协商', star: 5, leader: '李岗', address: '上城区民心路280号平安金融中心B座3楼' },
+            { img: 'public/images/studios/6-政协彭埠小组委员工作室-邀请非遗传承人开展非遗制作体验活动.webp', name: '政协彭埠小组委员工作室', activity: '非遗制作体验活动', star: 4, leader: '任渊', address: '上城区S2杭甬高速附近罗家老宅' },
+            { img: 'public/images/studios/7-工会界别委员工作室-开展"美丽大讲堂"活动.webp', name: '工会界别委员工作室', activity: '美丽大讲堂活动', star: 4, leader: '蔡肇颖', address: '上城区工人文化宫' },
+            { img: 'public/images/studios/8-社会福利和保障界别委员工作室-残疾人之家的义卖活动.webp', name: '社会福利和保障界别委员工作室', activity: '残疾人之家义卖活动', star: 4, leader: '吴国庆', address: '上城区凯旋路125号' },
+            { img: 'public/images/studios/9-"文润童心"委员工作室-传承和弘扬中华优秀传统文化，探索乡村优秀传统文化启蒙教育新路径.webp', name: '"文润童心"委员工作室', activity: '传统文化启蒙教育', star: 3, leader: '周媛媛', address: '上城区清波街道府学巷8号' },
+            { img: 'public/images/studios/10-全民阅读委员工作室-举办宋韵美学体验活动.webp', name: '全民阅读委员工作室', activity: '宋韵美学体验活动', star: 5, leader: '赵群伟', address: '上城区中山中路6号' },
+            { img: 'public/images/studios/11-爱馨文化公益委员工作室-爱馨文化公益委员工作室.webp', name: '爱馨文化公益委员工作室', activity: '文化公益服务', star: 4, leader: '杨洁', address: '上城区南山路198号' },
+            { img: 'public/images/studios/12-"老爸好商量"委员工作室-发扬重视家庭教育优良传统，助力孩子健康快乐成长，举办亲子运动会.webp', name: '"老爸好商量"委员工作室', activity: '亲子运动会', star: 3, leader: '俞富根', address: '上城区四宜路180号' },
+            { img: 'public/images/studios/13-有意思委员工作室-工作室委员与社区居民代表召开民生座谈会，听取居民对小区提升、菜场改造、停车难等问题的意见建议.webp', name: '有意思委员工作室', activity: '民生座谈会', star: 3, leader: '方晓阳', address: '上城区复兴南街130号' },
+            { img: 'public/images/studios/14-侨见未来委员工作室-关于社区居民空调安装纠纷的专项协商会.webp', name: '侨见未来委员工作室', activity: '专项协商会', star: 3, leader: '胡晓敏', address: '上城区兰巷101-104号' },
+            { img: 'public/images/studios/15-张瑞旭委员工作室-举办委员工作室跨代共融日活动.webp', name: '张瑞旭委员工作室', activity: '跨代共融日活动', star: 4, leader: '张瑞旭', address: '上城区凯旋街道凯益荟208室' },
+            { img: 'public/images/studios/16-大健康委员工作室-传承国粹，践行公益，走进社区开展健康宣教义诊活动.webp', name: '大健康委员工作室', activity: '健康宣教义诊活动', star: 5, leader: '谢慧淼', address: '上城区凯旋路与凯林巷交叉口' },
+            { img: 'public/images/studios/17-俞富康宋韵文化委员工作室-国际艺术交流送中国"福".webp', name: '俞富康宋韵文化委员工作室', activity: '国际艺术交流活动', star: 5, leader: '俞富康', address: '上城区凯旋路151号' },
+            { img: 'public/images/studios/18-春泥委员工作室-两会期间迎新送福、送春联.webp', name: '春泥委员工作室', activity: '迎新送福送春联', star: 4, leader: '沈春妮', address: '上城区采荷路34号' },
+            { img: 'public/images/studios/19-"邻聚力"委员工作室-凝聚社会公益慈善之心，开展"让每个孩子像花儿一样绽放"主题论坛.webp', name: '"邻聚力"委员工作室', activity: '主题论坛', star: 4, leader: '余丹凤', address: '上城区凤起东路203号' },
+            { img: 'public/images/studios/20-建和社区委员工作室-党建引领，做好点滴惠民小事，走访慰问九和人家独居老人.webp', name: '建和社区委员工作室', activity: '走访慰问独居老人', star: 3, leader: '周建卫', address: '上城区彭埠街道建和社区' },
+            { img: 'public/images/studios/21-健康九久委员工作室-召开健康普及专题座谈会.webp', name: '健康九久委员工作室', activity: '健康普及座谈会', star: 3, leader: '李祖胜', address: '上城区九堡街道蓝桥卫生服务站' },
+            { img: 'public/images/studios/22-同心·共富委员工作室-举行"乡村音乐节"，用实用管用的好点子，助力乡村振兴.webp', name: '同心·共富委员工作室', activity: '乡村音乐节活动', star: 4, leader: '吴韵', address: '上城区丁兰街道皋城村文化礼堂' },
+            { img: 'public/images/studios/23-茗荟聚智委员工作室-开展"茶韵议事"交流活动.webp', name: '茗荟聚智委员工作室', activity: '"茶韵议事"交流', star: 4, leader: '王容峰', address: '上城区大井巷30-4号' },
+            { img: 'public/images/studios/24-"育共体 阳光行"委员工作室-"小小政协委员"青少年模拟政协活动.webp', name: '"育共体 阳光行"委员工作室', activity: '小小政协委员活动', star: 4, leader: '王梦婷', address: '上城区景芳三区58幢' },
+            { img: 'public/images/studios/25-乐动新声委员工作室-委员工作室.webp', name: '乐动新声委员工作室', activity: '委员工作室活动', star: 3, leader: '俞宙', address: '上城区金峰大厦1503室' }
+        ];
+
+        // ===== EXTENDED STUDIOS (26-50, without photos, using gradient placeholders) =====
+        const extendedStudiosData = [
+            { name: '政协小营小组委员工作室', leader: '冷晓辉', address: '上城区建国南路98号', star: 5, type: '街道' },
+            { name: '政协望江小组委员工作室', leader: '毛静波', address: '上城区翡翠海岸1幢6号', star: 5, type: '街道' },
+            { name: '政协南星小组委员工作室', leader: '游广敏', address: '上城区目术塘创意园2号楼7楼', star: 5, type: '街道' },
+            { name: '闸弄口街道"基层治理"委员工作室', leader: '祝文雅', address: '上城区闸弄口街道党群服务中心', star: 4, type: '街道' },
+            { name: '政协凯旋小组委员工作室', leader: '金志伟', address: '上城区凤起东路127号', star: 5, type: '街道' },
+            { name: '政协笕桥小组委员工作室', leader: '阮骏', address: '上城区笕桥街道政协会议室', star: 4, type: '街道' },
+            { name: '政协九堡小组委员工作室', leader: '胡建清', address: '上城区九乔街与杭乔路交叉口', star: 4, type: '街道' },
+            { name: '政协丁兰小组委员工作室', leader: '倪勇卿', address: '上城区临丁路699号', star: 4, type: '街道' },
+            { name: '缪渭川委员工作室', leader: '缪渭川', address: '上城区凯旋街道南肖埠社区', star: 4, type: '界别' },
+            { name: '虞军红委员工作室', leader: '虞军红', address: '上城区运新花苑运新社区', star: 3, type: '界别' },
+            { name: '商业服务智库委员工作室', leader: '姚华俊、黄晓芹', address: '上城区新业路8号UDC时代大厦3楼', star: 5, type: '界别' },
+            { name: '宋韵老字号委员工作室', leader: '屠明珏', address: '上城区江城路865号', star: 5, type: '界别' },
+            { name: '幸福邻里委员工作室', leader: '尹兆青', address: '上城区闸弄口街道红梅社区', star: 3, type: '社区' },
+            { name: '大成委员工作室', leader: '陈磊', address: '上城区钱江路1366号华润大厦A座18层', star: 4, type: '界别' },
+            { name: '东港社区委员工作室', leader: '蒋平樑', address: '上城区笕桥街道东港社区', star: 3, type: '社区' },
+            { name: '杨柳郡社区委员工作室', leader: '王鹏', address: '上城区九和路660号绿城杨柳郡', star: 3, type: '社区' },
+            { name: '长睦幸福湾委员工作室', leader: '龚云玉', address: '上城区丁兰街道长睦苑社区', star: 3, type: '社区' },
+            { name: '上城区政协无党派界别委员工作室', leader: '凌栋', address: '上城区凯旋路247-1号4楼', star: 4, type: '界别' },
+            { name: '两岸一家亲委员工作室', leader: '陆雯', address: '上城区解放路189号-2', star: 3, type: '界别' },
+            { name: '"视觉之思"委员工作室', leader: '何晓菲', address: '上城区虎玉路16-18号', star: 3, type: '界别' },
+            { name: '非遗委员工作室', leader: '胡志强', address: '上城区大井巷55号', star: 4, type: '界别' },
+            { name: '乐医汇委员工作室', leader: '潘乐屹', address: '上城区同协路1279号西子智慧产业园', star: 4, type: '界别' },
+            { name: '智汇钱潮委员工作室', leader: '沈波', address: '上城区小院书房', star: 3, type: '界别' },
+            { name: '环境资源和农业界别委员工作室', leader: '熊义勤、骆鉴湖', address: '浙江大学华家池校区', star: 4, type: '界别' },
+            { name: '漱玉集委员工作室', leader: '王盈', address: '上城区紫阳街道闻潮路77号', star: 3, type: '界别' }
+        ];
+
+        // ===== BOUNDARIES DATA (16 categories with photos) =====
+        const boundariesData = [
+            { name: '中共', icon: '🔴', photos: ['public/images/gallery/2022.12.06 中共界别委员交流活动.webp', 'public/images/gallery/2024.02.02 区政协一届三次会议中共界别小组讨论会.webp'] },
+            { name: '无党派', icon: '🔵', photos: ['public/images/gallery/参加老旧小区物业提质协商议事.webp', 'public/images/gallery/无党派界别赴区司法局调研涉外法律服务有关工作 .webp', 'public/images/gallery/范国良副主席为老字号工作室揭牌.webp', 'public/images/gallery/范国良副主席参加无党派界别"洞悉当前宏观经济态势与战略投资机遇"主题分享活动.webp', 'public/images/gallery/重阳节开展为老服务.webp'] },
+            { name: '共青团、青联', icon: '🟢', photos: ['public/images/gallery/IMG_20240531_160417.webp', 'public/images/gallery/mmexport1717153124428.webp', 'public/images/gallery/mmexport1717153126963.webp', 'public/images/gallery/mmexport1717153128393.webp'] },
+            { name: '工会', icon: '🟡', photos: ['public/images/gallery/2024年5月6日 上工大讲堂.webp', 'public/images/gallery/5月25日2024年上城区职工毅行大会.webp', 'public/images/gallery/5月25日2024年上城区职工毅行大会2.webp'] },
+            { name: '妇联', icon: '🟣', photos: ['public/images/gallery/妇联界别召集人吕仕琼开展"七一"慰问.webp', 'public/images/gallery/妇联界别开展"品宋韵文化  做精致丽人"三八节活动.webp', 'public/images/gallery/妇联界别调研牵头人高艳霞带队调研白马庄巾帼共富工坊，为调研报告积累素材.webp', 'public/images/gallery/政协一届三次会议，妇联界别民宗界别合影.webp'] },
+            { name: '工商联', icon: '🟠', photos: ['public/images/gallery/主体培训班合影.webp', 'public/images/gallery/深圳浙江商会考察钱二图片.webp', 'public/images/gallery/组织民企500强部分人员参观考察钱二.webp'] },
+            { name: '科技、科协', icon: '🔬', photos: ['public/images/gallery/mmexport1711700143984.webp', 'public/images/gallery/mmexport1711702029812.webp'] },
+            { name: '侨、台', icon: '🌏', photos: ['public/images/gallery/WechatIMG31.webp', 'public/images/gallery/WechatIMG32.webp', 'public/images/gallery/WechatIMG33.webp'] },
+            { name: '新闻文体', icon: '📰', photos: ['public/images/gallery/2023年8月，参观亚运会博物馆.webp', 'public/images/gallery/2023年8月，参观亚运会博物馆2.webp'] },
+            { name: '经济', icon: '💰', photos: ['public/images/gallery/353cd94f8a4dc02a2e821a5ba8ab043.webp', 'public/images/gallery/619ee9289835d103c435f174c1e0cff.webp'] },
+            { name: '环境资源和农业', icon: '🌿', photos: ['public/images/gallery/3f7343aec8231bde22a668a4e17d149a.webp', 'public/images/gallery/42e4ebbcbe8d12cf29a4876baecaca2a.webp', 'public/images/gallery/82cf6d0fbeb3c41a443b837ff9927617.webp', 'public/images/gallery/db8232e0c5d40a94e9fbcf8c9dfaee8.webp'] },
+            { name: '教育', icon: '📚', photos: ['public/images/gallery/2f41c28d4b53804fb60bb6ef196c54a4.webp', 'public/images/gallery/IMG_2126.webp'] },
+            { name: '医卫', icon: '🏥', photos: ['public/images/gallery/IMG20240527105848.webp', 'public/images/gallery/IMG20240527161315.webp', 'public/images/gallery/IMG20240527170959.webp', 'public/images/gallery/IMG_0853.HEIC.webp'] },
+            { name: '社会福利和保障', icon: '🤝', photos: ['public/images/gallery/区政府副主席范国良与政协委员参观社会福利和保障界别委员工作室.webp', 'public/images/gallery/社会福利和保障界别委员联系界别群众参加党纪学习教育.webp', 'public/images/gallery/联动邵逸夫医院，开展"以爱之名"等残疾人画展及手工艺品义卖活动.webp'] },
+            { name: '民宗', icon: '🙏', photos: ['public/images/gallery/IMG_20240315_085702.webp', 'public/images/gallery/IMG_20240618_095251.webp'] },
+            { name: '特邀', icon: '⭐', photos: ['public/images/gallery/与商户开展座谈.webp', 'public/images/gallery/开展读书会.webp', 'public/images/gallery/现场调研德寿宫附近停车泊位情况.webp', 'public/images/gallery/现场调研湖滨步行街营商环境提升项目.webp', 'public/images/gallery/针对德寿宫周边一件事情况进行座谈.webp'] }
+        ];
+
+        // ===== SUB-CENTER DATA =====
+        const subCenterData = {
+            pengbu: {
+                name: '彭埠分中心',
+                desc: '彭埠分中心位于罗家老宅，是市政协新时代协商民主实践中心矩阵的重要组成部分。中心定期开展党建联建、民生议事堂、界别交流等活动，成为市区街三级政协联动的重要枢纽。',
+                photos: [
+                    'public/images/gallery/彭埠1-市政协新时代协商民主实践中心矩阵建设座谈会在实践中心上城区分中心召开，市政协毛溪浩副主席参加.webp',
+                    'public/images/gallery/彭埠2-市区街三级政协党建联建工作会议在彭埠分中心召开.webp',
+                    'public/images/gallery/彭埠3-彭埠街道委员小组开展"圆梦安居，助力街道回迁安置"民生议事堂专题协商.webp',
+                    'public/images/gallery/彭埠4-彭埠街道委员小组开展非遗体验活动.webp',
+                    'public/images/gallery/彭埠5-联盟单位夏衍小学开展棋类比赛.webp',
+                    'public/images/gallery/彭埠6-妇联界别举办国学文化品鉴暨界别调研总结会.webp',
+                    'public/images/gallery/彭埠7-共青团、青联界别，工商联界别，科技、科协界别和彭埠街道委员小组联合举办中医养生专题讲座及义诊服务活动.webp',
+                    'public/images/gallery/彭埠8-湖滨街道委员小组开展"助推商圈社区建设"民生议事堂活动.webp',
+                    'public/images/gallery/彭埠9-清波街道委员小组、无党派界别开展清波街道老旧小区物业服务"质价双提"议事协商活动.webp',
+                    'public/images/gallery/彭埠10-小营街道委员小组举办"遇见东坡"交流会.webp',
+                    'public/images/gallery/彭埠11-望江街道委员小组开展"普及全民金融知识增强百姓防诈意识"专题协商活动.webp',
+                    'public/images/gallery/彭埠12-南星街道委员小组携手特邀界别举办"赓续历史之文脉，建言服务为民生"冬季读书会及专题协商会.webp'
+                ]
+            },
+            ziyang: {
+                name: '紫阳分中心',
+                desc: '紫阳分中心位于金钗袋巷，依托"三一"委员工作室，积极探索基层协商民主新路径。中心以上羊实践点为抓手，聚焦邻里食堂智能化等民生议题，推动政协协商与基层治理深度融合。',
+                photos: [
+                    'public/images/gallery/紫阳1-区政协孙国方主席赴紫阳分中心调研.webp',
+                    'public/images/gallery/紫阳2-市政协吴玉凤副秘书长调研紫阳分中心建设工作.webp',
+                    'public/images/gallery/紫阳3-紫阳上羊实践点开展"推动邻里食堂智能化"专题协商会.webp'
+                ]
+            }
+        };
+
+        const timelineData = [
+            { date: '2026年Q1', title: '街道"民生议事堂"启动', desc: '14个街道全面启动民生议事堂活动，聚焦群众急难愁盼问题' },
+            { date: '2026年Q2', title: '界别履职计划推进', desc: '各界别制定并实施年度履职计划，开展专题调研和协商活动' },
+            { date: '2026年Q3', title: '委员工作室深化', desc: '深化委员工作室建设，开展跨领域交流合作，提升履职实效' },
+            { date: '2026年Q4', title: '年度总结与表彰', desc: '总结年度工作成果，表彰优秀委员和工作室，谋划新一年工作' }
+        ];
+
+        const navItems = [
+            { id: 'home', label: '首页' },
+            { id: 'modules', label: '工作模块' },
+            { id: 'boundaries', label: '界别风采' },
+            { id: 'subcenter', label: '实践分中心' },
+            { id: 'gallery', label: '活动风采' },
+            { id: 'studios', label: '委员工作室' },
+            { id: 'timeline', label: '年度计划' }
+        ];
+
+        // ===== CUSTOM HOOKS =====
+
+        // Scroll position tracking with progress
+        function useScrollPosition() {
+            const [scrollY, setScrollY] = useState(0);
+            const [activeSection, setActiveSection] = useState('home');
+            const [scrollProgress, setScrollProgress] = useState(0);
+            useEffect(() => {
+                const handleScroll = () => {
+                    const y = window.scrollY;
+                    setScrollY(y);
+                    // Progress
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const progress = docHeight > 0 ? y / docHeight : 0;
+                    setScrollProgress(progress);
+                    // Active section
+                    const sections = navItems.map(item => document.getElementById(item.id)).filter(Boolean);
+                    let current = 'home';
+                    for (const section of sections) {
+                        if (section.offsetTop - 150 <= y) {
+                            current = section.id;
+                        }
+                    }
+                    setActiveSection(current);
+                };
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+            return { scrollY, activeSection, scrollProgress };
+        }
+
+        // Enhanced Intersection Observer with reveal animations
+        function useInView(options = {}) {
+            const ref = useRef(null);
+            const [isInView, setIsInView] = useState(false);
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsInView(true);
+                        // Add reveal class to children with data-reveal
+                        const el = entry.target;
+                        el.querySelectorAll('[data-reveal]').forEach((child, index) => {
+                            const delay = child.getAttribute('data-delay') || index * 0.1;
+                            child.style.transitionDelay = `${delay}s`;
+                            child.classList.add('revealed');
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                }, { threshold: 0.08, ...options });
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+            return [ref, isInView];
+        }
+
+        // Parallax scroll hook
+        function useParallax(speed = 0.3) {
+            const [offset, setOffset] = useState(0);
+            useEffect(() => {
+                const handleScroll = () => {
+                    setOffset(window.scrollY * speed);
+                };
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, [speed]);
+            return offset;
+        }
+
+        // Lazy image component
+        function LazyImage({ src, alt, className, style, onClick, loading = 'lazy' }) {
+            const [loaded, setLoaded] = useState(false);
+            const [error, setError] = useState(false);
+            return (
+                <img
+                    src={src}
+                    alt={alt}
+                    className={`${className || ''} lazy-img ${loaded ? 'loaded' : 'img-skeleton'}`}
+                    style={style}
+                    onClick={onClick}
+                    loading={loading}
+                    onLoad={() => setLoaded(true)}
+                    onError={() => setError(true)}
+                    referrerPolicy="no-referrer"
+                />
+            );
+        }
+
+        // ===== COMPONENTS =====
+
+        // Header with scroll tracking
+        function Header() {
+            const { scrollY, activeSection } = useScrollPosition();
+            const [menuOpen, setMenuOpen] = useState(false);
+
+            const scrollToSection = useCallback((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    setMenuOpen(false);
+                }
+            }, []);
+
+            return (
+                <header className={`header ${scrollY > 100 ? 'scrolled' : ''}`}>
+                    <nav className="header-nav">
+                        <a className="header-logo" href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
+                            <div className="header-logo-icon">政</div>
+                            <span className="header-logo-text">政协委员通</span>
+                        </a>
+                        <ul className={`header-links ${menuOpen ? 'active' : ''}`}>
+                            {navItems.map(item => (
+                                <li key={item.id}>
+                                    <a
+                                        href={`#${item.id}`}
+                                        className={activeSection === item.id ? 'active' : ''}
+                                        onClick={(e) => { e.preventDefault(); scrollToSection(item.id); }}
+                                    >
+                                        {item.label}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                        <button
+                            className={`menu-toggle ${menuOpen ? 'open' : ''}`}
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            aria-label="菜单切换"
+                        >
+                            <span></span><span></span><span></span>
+                        </button>
+                    </nav>
+                </header>
+            );
+        }
+
+        // Hero section with parallax
+        function Hero() {
+            const parallaxOffset = useParallax(0.4);
+            const { scrollY } = useScrollPosition();
+            const contentOpacity = Math.max(0, 1 - scrollY / 600);
+            const contentTranslate = scrollY * 0.2;
+
+            return (
+                <section className="hero" id="home">
+                    <div className="hero-pattern" style={{ transform: `translateY(${parallaxOffset * 0.5}px)` }}></div>
+                    <div className="hero-deco" style={{ transform: `translateY(${parallaxOffset * 0.3}px)` }}></div>
+                    <div className="hero-deco" style={{ transform: `translateY(${parallaxOffset * 0.5}px)` }}></div>
+                    <div className="hero-deco" style={{ transform: `translateY(${parallaxOffset * 0.2}px)` }}></div>
+                    <div className="hero-content" style={{ opacity: contentOpacity, transform: `translateY(${contentTranslate}px)` }}>
+                        <div className="hero-badge">杭州市上城区</div>
+                        <h1 className="hero-title">政协委员通</h1>
+                        <p className="hero-subtitle">凝聚共识、汇聚力量，为上城区高质量发展贡献政协智慧和力量</p>
+                        <div className="hero-actions">
+                            <a href="#modules" className="btn btn-primary" onClick={(e) => { e.preventDefault(); document.getElementById('modules')?.scrollIntoView({ behavior: 'smooth' }); }}>探索模块</a>
+                            <a href="#gallery" className="btn btn-outline" onClick={(e) => { e.preventDefault(); document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' }); }}>查看风采</a>
+                        </div>
+                    </div>
+                    <div className="hero-scroll-hint" style={{ opacity: contentOpacity }}>
+                        <div className="scroll-mouse"></div>
+                        <span>向下滚动</span>
+                    </div>
+                </section>
+            );
+        }
+
+        // Stats bar
+        function Stats() {
+            const [ref, isInView] = useInView();
+            const stats = [
+                { number: 14, suffix: '', label: '街道委员小组' },
+                { number: 16, suffix: '', label: '界别组织' },
+                { number: 50, suffix: '', label: '委员工作室' },
+                { number: 91, suffix: '+', label: '活动照片' }
+            ];
+            return (
+                <section className="stats" ref={ref}>
+                    <div className="stats-grid">
+                        {stats.map((stat, i) => (
+                            <div
+                                key={i}
+                                className="stat-item reveal-scale"
+                                data-reveal
+                                data-delay={i * 0.12}
+                                style={{ animation: isInView ? `countUp 0.6s ease ${i * 0.12}s both` : 'none' }}
+                            >
+                                <div className="stat-number">{isInView ? stat.number : 0}{stat.suffix && <span>{stat.suffix}</span>}</div>
+                                <div className="stat-label">{stat.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Section header
+        function SectionHeader({ tag, title, desc }) {
+            const [ref, isInView] = useInView();
+            return (
+                <div className="section-header" ref={ref} style={{ animation: isInView ? 'fadeInUp 0.6s ease both' : 'none' }}>
+                    <span className="section-tag">{tag}</span>
+                    <h2 className="section-title">{title}</h2>
+                    {desc && <p className="section-desc">{desc}</p>}
+                </div>
+            );
+        }
+
+        // Module cards
+        function Modules({ onOpenDetail }) {
+            const [ref, isInView] = useInView();
+            return (
+                <section className="section" id="modules">
+                    <SectionHeader tag="工作模块" title="政协工作体系" desc="涵盖委员之家、街道小组、界别活动、履职平台等全方位服务体系，点击卡片查看详情" />
+                    <div className="modules-grid" ref={ref}>
+                        {modulesData.map((mod, i) => (
+                            <div
+                                key={mod.id}
+                                className="module-card reveal-up"
+                                data-reveal
+                                data-delay={i * 0.1}
+                                onClick={() => onOpenDetail(mod)}
+                                style={{ animation: isInView ? `fadeInUp 0.5s ease ${i * 0.1}s both` : 'none' }}
+                            >
+                                <div className="module-image">
+                                    <LazyImage src={mod.images[0]} alt={mod.title} style={{ position: 'absolute', inset: 0 }} />
+                                    <div className="module-image-gradient" style={{ position: 'absolute', inset: 0, opacity: 0.4 }}></div>
+                                    <div className="module-overlay"><h3>{mod.title}</h3></div>
+                                    <div className="module-number">{mod.id}</div>
+                                    <span className="module-click-hint">点击查看详情</span>
+                                </div>
+                                <div className="module-content">
+                                    <h3>{mod.title}</h3>
+                                    <p>{mod.desc}</p>
+                                    <div className="module-tags">
+                                        {mod.tags.map(tag => <span key={tag} className="module-tag">{tag}</span>)}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Gallery with load more
+        function Gallery({ onOpenImage }) {
+            const ITEMS_PER_PAGE = 16;
+            const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+            const [ref, isInView] = useInView();
+            const visibleItems = galleryData.slice(0, visibleCount);
+            const hasMore = visibleCount < galleryData.length;
+
+            return (
+                <section className="gallery-section" id="gallery">
+                    <SectionHeader tag="活动风采" title="精彩活动瞬间" desc={`记录政协工作的每一个精彩时刻，展现委员履职风采 (${galleryData.length}张)`} />
+                    <div className="gallery-grid" ref={ref}>
+                        {visibleItems.map((item, i) => (
+                            <div
+                                key={i}
+                                className="gallery-item reveal-scale"
+                                data-reveal
+                                data-delay={Math.min(i, 11) * 0.04}
+                                onClick={() => onOpenImage(item.img, item.title)}
+                                style={{ animation: isInView ? `fadeInUp 0.4s ease ${Math.min(i, 11) * 0.04}s both` : 'none' }}
+                            >
+                                <LazyImage src={item.img} alt={item.title} />
+                                <div className="gallery-overlay">
+                                    <h4>{item.title}</h4>
+                                    <p>{item.subtitle}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {hasMore && (
+                        <div className="gallery-load-more" style={{ animation: isInView ? 'fadeInUp 0.5s ease 0.4s both' : 'none' }}>
+                            <button className="btn btn-primary" onClick={() => setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, galleryData.length))}>
+                                加载更多 ({galleryData.length - visibleCount}张剩余)
+                            </button>
+                        </div>
+                    )}
+                </section>
+            );
+        }
+
+        // Boundaries section (界别)
+        function Boundaries({ onOpenImage }) {
+            const [ref, isInView] = useInView();
+            return (
+                <section className="boundaries-section" id="boundaries">
+                    <SectionHeader tag="界别风采" title="16个界别活动展示" desc={`各界别定期开展活动，凝聚共识、汇聚力量，展现政协特色优势 (${boundariesData.length}个界别)`} />
+                    <div className="boundaries-grid" ref={ref}>
+                        {boundariesData.map((b, i) => (
+                            <div
+                                key={i}
+                                className="boundary-card reveal-up"
+                                data-reveal
+                                data-delay={Math.min(i, 7) * 0.06}
+                                style={{ animation: isInView ? `fadeInUp 0.5s ease ${Math.min(i, 7) * 0.06}s both` : 'none' }}
+                            >
+                                <div className="boundary-header">
+                                    <div className="boundary-icon" style={{ background: `linear-gradient(135deg, ${i % 2 === 0 ? 'var(--primary-red)' : 'var(--gold)'}, ${i % 2 === 0 ? 'var(--deep-red)' : 'var(--gold-light)'})`, color: i % 2 === 0 ? 'white' : 'var(--deep-red)' }}>{b.icon}</div>
+                                    <div>
+                                        <h4>{b.name}界别</h4>
+                                        <div className="boundary-count">{b.photos.length}张活动照片</div>
+                                    </div>
+                                </div>
+                                <div className={`boundary-photos ${b.photos.length === 1 ? 'single' : ''}`}>
+                                    {b.photos.slice(0, 4).map((photo, j) => (
+                                        <LazyImage key={j} src={photo} alt={`${b.name}界别活动`} onClick={() => onOpenImage(photo, `${b.name}界别活动`)} />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Sub-center section (分中心)
+        function SubCenter({ onOpenImage }) {
+            const [ref, isInView] = useInView();
+            return (
+                <section className="subcenter-section" id="subcenter">
+                    <SectionHeader tag="实践分中心" title="新时代协商民主实践中心上城区分中心" desc="设有彭埠分中心和紫阳分中心，打造政协工作创新实践的示范样板" />
+                    <div className="subcenter-layout" ref={ref}>
+                        {Object.values(subCenterData).map((center, i) => (
+                            <div
+                                key={i}
+                                className="subcenter-block reveal-up"
+                                data-reveal
+                                data-delay={i * 0.15}
+                                style={{ animation: isInView ? `fadeInUp 0.6s ease ${i * 0.15}s both` : 'none' }}
+                            >
+                                <div className="subcenter-title">
+                                    <span className="sub-icon">{i === 0 ? '🏛️' : '🏛️'}</span>
+                                    {center.name}
+                                </div>
+                                <div className="subcenter-photos">
+                                    {center.photos.map((photo, j) => (
+                                        <LazyImage key={j} src={photo} alt={`${center.name}活动`} onClick={() => onOpenImage(photo, center.name)} className={j === 0 ? 'wide' : ''} />
+                                    ))}
+                                </div>
+                                <div className="subcenter-desc">{center.desc}</div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Studios grid (module-card style) - expanded to show all 50
+        function Studios({ onOpenImage }) {
+            const [ref, isInView] = useInView();
+            const [showAll, setShowAll] = useState(false);
+            const getStarClass = (star) => {
+                if (star === 5) return 'five';
+                if (star === 4) return 'four';
+                if (star === 3) return 'three';
+                return '';
+            };
+            const getStarLabel = (star) => {
+                if (star === 5) return '★★★★★ 五星级';
+                if (star === 4) return '★★★★ 四星级';
+                if (star === 3) return '★★★ 三星级';
+                return '';
+            };
+            // First 25 studios with photos
+            const photoStudios = studiosData;
+            // Remaining 25 studios without photos
+            const extraStudios = extendedStudiosData;
+            const displayPhoto = showAll ? photoStudios : photoStudios;
+
+            return (
+                <section className="studios-section" id="studios">
+                    <SectionHeader tag="委员工作室" title="委员工作室风采" desc={`各具特色的委员工作室，展示多元化的履职方式和创新实践 (共50个，五星25个·四星17个·三星8个)`} />
+                    <div className="studios-grid" ref={ref}>
+                        {displayPhoto.map((studio, i) => (
+                            <div
+                                key={i}
+                                className="studio-card reveal-up"
+                                data-reveal
+                                data-delay={Math.min(i, 11) * 0.06}
+                                onClick={() => onOpenImage(studio.img, studio.name)}
+                                style={{ animation: isInView ? `fadeInUp 0.5s ease ${Math.min(i, 11) * 0.06}s both` : 'none' }}
+                            >
+                                <div className="studio-image">
+                                    <LazyImage src={studio.img} alt={studio.name} />
+                                    {studio.star > 0 && (
+                                        <span className={`studio-badge ${getStarClass(studio.star)}`}>{getStarLabel(studio.star)}</span>
+                                    )}
+                                    <div className="studio-overlay"><h4>{studio.name}</h4></div>
+                                    <span className="studio-click-hint">查看详情</span>
+                                </div>
+                                <div className="studio-info">
+                                    <h4>{studio.name}</h4>
+                                    <p>{studio.activity}</p>
+                                    <div className="studio-tags">
+                                        {studio.star === 5 && <span className="studio-tag">五星示范</span>}
+                                        {studio.star === 4 && <span className="studio-tag">四星优秀</span>}
+                                        {studio.star === 3 && <span className="studio-tag">三星达标</span>}
+                                        <span className="studio-tag">{studio.activity}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Extended studios list (26-50, without photos) */}
+                    {showAll && (
+                        <div style={{ maxWidth: '1400px', margin: '2rem auto 0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                            {extraStudios.map((studio, i) => (
+                                <div
+                                    key={i}
+                                    className="reveal-up revealed"
+                                    style={{
+                                        background: 'white', borderRadius: 'var(--radius)', padding: '1.2rem 1.5rem',
+                                        boxShadow: '0 4px 16px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)',
+                                        display: 'flex', alignItems: 'center', gap: '1rem',
+                                        animation: isInView ? `fadeInUp 0.4s ease ${(i % 6) * 0.05}s both` : 'none'
+                                    }}
+                                >
+                                    <div style={{
+                                        width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        background: studio.star === 5 ? 'linear-gradient(135deg, #D4AF37, #F0D78C)' :
+                                                    studio.star === 4 ? 'linear-gradient(135deg, #8B8B8B, #C0C0C0)' :
+                                                    'linear-gradient(135deg, #CD7F32, #E8A85C)',
+                                        color: studio.star === 5 ? '#5D4E00' : studio.star === 4 ? '#333' : '#5D3A00',
+                                        fontWeight: 700, fontSize: '1.1rem', fontFamily: "'Noto Serif SC', serif"
+                                    }}>
+                                        {studio.star === 5 ? '★5' : studio.star === 4 ? '★4' : '★3'}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <h4 style={{ fontFamily: "'Noto Serif SC', serif", fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.2rem', lineHeight: 1.3 }}>{studio.name}</h4>
+                                        <p style={{ color: 'var(--text-light)', fontSize: '0.78rem', lineHeight: 1.4 }}>负责人：{studio.leader} · {studio.address}</p>
+                                    </div>
+                                    <span style={{
+                                        padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 500, flexShrink: 0,
+                                        background: studio.type === '街道' ? '#fff5f5' : studio.type === '界别' ? '#f0f5ff' : '#f5fff0',
+                                        color: studio.type === '街道' ? 'var(--primary-red)' : studio.type === '界别' ? '#4361ee' : '#2d6a4f'
+                                    }}>{studio.type}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                        <button className="btn btn-primary" onClick={() => setShowAll(!showAll)}>
+                            {showAll ? '收起 ▲ 只显示有照片的工作室' : `展开全部50个工作室 ▼ (还有${extraStudios.length}个)`}
+                        </button>
+                    </div>
+                </section>
+            );
+        }
+
+        // Timeline
+        function Timeline() {
+            const [ref, isInView] = useInView();
+            return (
+                <section className="timeline-section" id="timeline">
+                    <div className="section-header" style={{ marginBottom: '4rem' }}>
+                        <span className="section-tag">年度计划</span>
+                        <h2 className="section-title" style={{ color: 'white' }}>2026年履职计划</h2>
+                        <p className="section-desc" style={{ color: 'rgba(255,255,255,0.7)' }}>新的一年，新的征程，携手共创政协工作新篇章</p>
+                    </div>
+                    <div className="timeline" ref={ref}>
+                        {timelineData.map((item, i) => (
+                            <div
+                                key={i}
+                                className="timeline-item"
+                                style={{ animation: isInView ? `fadeInUp 0.5s ease ${i * 0.15}s both` : 'none' }}
+                            >
+                                <div className="timeline-dot"></div>
+                                <div className="timeline-content">
+                                    <div className="timeline-date">{item.date}</div>
+                                    <h4>{item.title}</h4>
+                                    <p>{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Footer
+        function Footer() {
+            return (
+                <footer className="footer">
+                    <div className="footer-content">
+                        <div className="footer-section">
+                            <h3>关于平台</h3>
+                            <p>上城区政协委员通是区政协数字化转型的重要成果，致力于为政协委员提供便捷高效的履职服务平台。</p>
+                        </div>
+                        <div className="footer-section">
+                            <h3>快速链接</h3>
+                            <ul>
+                                {navItems.map(item => (
+                                    <li key={item.id}><a href={`#${item.id}`}>{item.label}</a></li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="footer-section">
+                            <h3>联系我们</h3>
+                            <p>杭州市上城区政协办公室</p>
+                            <p>联系电话：0571-XXXX-XXXX</p>
+                            <p>电子邮箱：sczx@hzcppcc.gov.cn</p>
+                        </div>
+                    </div>
+                    <div className="footer-bottom">
+                        <p>&copy; 2026 杭州市上城区政协 版权所有</p>
+                    </div>
+                </footer>
+            );
+        }
+
+        // Image Lightbox Modal
+        function ImageModal({ src, caption, onClose }) {
+            useEffect(() => {
+                const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+                document.addEventListener('keydown', handleKey);
+                document.body.style.overflow = 'hidden';
+                return () => {
+                    document.removeEventListener('keydown', handleKey);
+                    document.body.style.overflow = '';
+                };
+            }, [onClose]);
+
+            return (
+                <div className="modal-overlay active" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                    <div className="modal-container">
+                        <button className="modal-close" onClick={onClose}>&times;</button>
+                        <LazyImage src={src} alt={caption || ''} className="" loading="eager" />
+                        {caption && <div className="modal-caption">{caption}</div>}
+                    </div>
+                </div>
+            );
+        }
+
+        // Module Detail Modal
+        function DetailModal({ module, onClose, onOpenImage }) {
+            useEffect(() => {
+                const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+                document.addEventListener('keydown', handleKey);
+                document.body.style.overflow = 'hidden';
+                return () => {
+                    document.removeEventListener('keydown', handleKey);
+                    document.body.style.overflow = '';
+                };
+            }, [onClose]);
+
+            if (!module) return null;
+
+            return (
+                <div className="detail-modal active" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                    <div className="detail-container">
+                        <div className="detail-header">
+                            <button className="detail-close" onClick={onClose}>&times;</button>
+                            <h2>{module.title}</h2>
+                            <p>{module.desc}</p>
+                        </div>
+                        <div className="detail-body">
+                            <div className="detail-section">
+                                <h3>模块介绍</h3>
+                                <p>{module.content}</p>
+                            </div>
+                            <div className="detail-section">
+                                <h3>相关照片 ({module.images.length})</h3>
+                                <div className="detail-images">
+                                    {module.images.map((img, i) => (
+                                        <LazyImage
+                                            key={i}
+                                            src={img}
+                                            alt={`${module.title} 照片${i + 1}`}
+                                            onClick={() => onOpenImage(img, module.title)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Back to top button
+        function BackToTop({ scrollY }) {
+            return (
+                <button
+                    className={`back-to-top ${scrollY > 400 ? 'visible' : ''}`}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    aria-label="回到顶部"
+                >
+                    ↑
+                </button>
+            );
+        }
+
+        // Scroll progress bar
+        function ScrollProgressBar({ progress }) {
+            return (
+                <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }}></div>
+            );
+        }
+
+        // Side scroll indicator
+        function ScrollSideIndicator({ activeSection }) {
+            const scrollTo = useCallback((id) => {
+                const el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, []);
+            return (
+                <div className="scroll-indicator">
+                    {navItems.map(item => (
+                        <div
+                            key={item.id}
+                            className={`scroll-indicator-dot ${activeSection === item.id ? 'active' : ''}`}
+                            data-label={item.label}
+                            onClick={() => scrollTo(item.id)}
+                        />
+                    ))}
+                </div>
+            );
+        }
+
+        // ===== SMOOTH INERTIAL SCROLL HOOK =====
+        // Intercepts native wheel events and applies smooth, momentum-based scrolling
+        // like iOS/macOS — the page glides freely with inertia and deceleration
+        function useSmoothScroll() {
+            useEffect(() => {
+                const html = document.documentElement;
+
+                // Scroll state
+                let currentY = window.scrollY;
+                let targetY = window.scrollY;
+                let velocity = 0;
+                let animationId = null;
+                let isRunning = false;
+                let lastWheelTime = 0;
+                let wheelAccumulator = 0;
+
+                // Configuration
+                const LERP_FACTOR = 0.12;          // How quickly currentY catches targetY (lower = smoother)
+                const VELOCITY_DECAY = 0.92;       // How fast momentum decays after wheel stops
+                const VELOCITY_THRESHOLD = 0.3;    // Stop animation when velocity drops below this
+                const WHEEL_SENSITIVITY = 1.0;     // Multiplier for wheel delta
+                const WHEEL_DELTA_MODE_LINE = 40;  // Normalize line-mode delta
+
+                // Keep currentY synced if something else scrolls (e.g. scrollIntoView, keyboard)
+                const onNativeScroll = () => {
+                    const newY = window.scrollY;
+                    // If the scroll position changed significantly and we didn't cause it,
+                    // it's an external scroll — sync our state
+                    if (!isRunning || Math.abs(newY - currentY) > 50) {
+                        currentY = newY;
+                        targetY = newY;
+                        velocity = 0;
+                    }
+                };
+
+                const onWheel = (e) => {
+                    e.preventDefault();
+
+                    let delta = e.deltaY;
+                    // Normalize deltaMode
+                    if (e.deltaMode === 1) delta *= WHEEL_DELTA_MODE_LINE;
+                    else if (e.deltaMode === 2) delta *= WHEEL_DELTA_MODE_LINE * 3;
+
+                    delta *= WHEEL_SENSITIVITY;
+
+                    const now = Date.now();
+                    const dt = now - lastWheelTime;
+
+                    // Track rapid successive wheel events for momentum building
+                    if (dt < 200) {
+                        wheelAccumulator += Math.abs(delta);
+                    } else {
+                        wheelAccumulator = Math.abs(delta);
+                    }
+                    lastWheelTime = now;
+
+                    // Apply acceleration for fast wheel scrolling
+                    const boost = Math.min(wheelAccumulator / 800, 1.5);
+                    delta *= (1 + boost * 0.3);
+
+                    // Update target position
+                    targetY += delta;
+
+                    // Clamp target within scroll bounds
+                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                    targetY = Math.max(0, Math.min(targetY, maxScroll));
+
+                    // Calculate velocity from wheel input
+                    velocity = targetY - currentY;
+
+                    if (!isRunning) {
+                        isRunning = true;
+                        html.classList.add('is-smooth-scrolling');
+                        animate();
+                    }
+                };
+
+                const animate = () => {
+                    // Interpolate current position toward target
+                    const diff = targetY - currentY;
+
+                    // If still receiving recent wheel input, track velocity
+                    const timeSinceWheel = Date.now() - lastWheelTime;
+                    if (timeSinceWheel > 80) {
+                        // Wheel stopped — apply momentum decay
+                        velocity *= VELOCITY_DECAY;
+                        targetY = currentY + velocity;
+
+                        // Clamp
+                        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                        targetY = Math.max(0, Math.min(targetY, maxScroll));
+
+                        // Stop when velocity is negligible
+                        if (Math.abs(velocity) < VELOCITY_THRESHOLD && Math.abs(diff) < 0.5) {
+                            currentY = targetY;
+                            window.scrollTo(0, currentY);
+                            isRunning = false;
+                            html.classList.remove('is-smooth-scrolling');
+                            return;
+                        }
+                    }
+
+                    // Lerp toward target
+                    currentY += diff * LERP_FACTOR;
+
+                    // Apply scroll
+                    window.scrollTo(0, Math.round(currentY));
+
+                    animationId = requestAnimationFrame(animate);
+                };
+
+                // Listen for wheel with { passive: false } to preventDefault
+                window.addEventListener('wheel', onWheel, { passive: false });
+                window.addEventListener('scroll', onNativeScroll, { passive: true });
+
+                return () => {
+                    window.removeEventListener('wheel', onWheel);
+                    window.removeEventListener('scroll', onNativeScroll);
+                    if (animationId) cancelAnimationFrame(animationId);
+                    html.classList.remove('is-smooth-scrolling');
+                };
+            }, []);
+
+            return null;
+        }
+
+        // ===== ROOT APP COMPONENT =====
+        function App() {
+            const [imageModal, setImageModal] = useState(null); // { src, caption }
+            const [detailModal, setDetailModal] = useState(null); // module object
+            const { scrollY, activeSection, scrollProgress } = useScrollPosition();
+            useSmoothScroll(); // Enable smooth inertial scrolling
+
+            const openImage = useCallback((src, caption) => {
+                setImageModal({ src, caption });
+            }, []);
+
+            const closeImage = useCallback(() => {
+                setImageModal(null);
+            }, []);
+
+            const openDetail = useCallback((module) => {
+                setDetailModal(module);
+            }, []);
+
+            const closeDetail = useCallback(() => {
+                setDetailModal(null);
+            }, []);
+
+            return (
+                <>
+                    <ScrollProgressBar progress={scrollProgress} />
+                    <Header />
+                    <ScrollSideIndicator activeSection={activeSection} />
+                    <Hero />
+                    <Stats />
+                    <Modules onOpenDetail={openDetail} />
+                    <Boundaries onOpenImage={openImage} />
+                    <SubCenter onOpenImage={openImage} />
+                    <Gallery onOpenImage={openImage} />
+                    <Studios onOpenImage={openImage} />
+                    <Timeline />
+                    <Footer />
+                    <BackToTop scrollY={scrollY} />
+
+                    {/* Modals rendered via React root */}
+                    {imageModal && (
+                        <ImageModal src={imageModal.src} caption={imageModal.caption} onClose={closeImage} />
+                    )}
+                    <DetailModal module={detailModal} onClose={closeDetail} onOpenImage={openImage} />
+                </>
+            );
+        }
+
+        // ===== REACT ROOT RENDERING =====
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App />);
+    </script>
+</body>
+</html>
